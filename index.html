@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Fatih Gençlik Vakfı Bülteni · 2025 Özel Sayısı</title>
+<style>
+  :root{--yesil:#305754;--koyu:#1d3532;--altin:#c9a865}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{background:radial-gradient(ellipse at 50% 30%,#3c6662 0%,var(--koyu) 70%);color:#fff;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;display:flex;flex-direction:column;overflow:hidden}
+  header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;gap:12px}
+  header h1{font-size:15px;font-weight:600;letter-spacing:.04em}
+  header h1 span{color:var(--altin);font-weight:400}
+  header a{color:var(--altin);font-size:13px;text-decoration:none;border:1px solid rgba(201,168,101,.5);padding:6px 12px;border-radius:999px;white-space:nowrap}
+  #sahne{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;padding:8px 16px}
+  #kitap{margin:auto}
+  .page{background:#fff}
+  .page img{width:100%;height:100%;display:block;object-fit:cover}
+  footer{display:flex;align-items:center;justify-content:center;gap:14px;padding:10px 16px 14px}
+  footer button{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.25);width:44px;height:44px;border-radius:50%;font-size:20px;cursor:pointer}
+  footer button:hover{background:rgba(255,255,255,.2)}
+  #say{min-width:90px;text-align:center;font-size:14px;color:#dfe9e6;font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<header>
+  <h1>Fatih Gençlik Vakfı Bülteni <span>· 2025 Özel Sayısı</span></h1>
+  <a href="bulten.pdf" download>PDF indir</a>
+</header>
+<div id="sahne"><div id="kitap"></div></div>
+<footer>
+  <button id="geri" aria-label="Önceki sayfa">‹</button>
+  <div id="say">1 / 28</div>
+  <button id="ileri" aria-label="Sonraki sayfa">›</button>
+</footer>
+<script src="vendor/page-flip.browser.js"></script>
+<script>
+  const N = 28, kitap = document.getElementById('kitap');
+  for (let i = 1; i <= N; i++) {
+    const d = document.createElement('div');
+    d.className = 'page';
+    if (i === 1 || i === N) d.dataset.density = 'hard';
+    d.innerHTML = `<img src="sayfalar/s-${String(i).padStart(2, '0')}.jpg" alt="Sayfa ${i}" loading="${i < 5 ? 'eager' : 'lazy'}">`;
+    kitap.appendChild(d);
+  }
+  // kitabı sahneye sığdır: geniş ekranda çift sayfa, dar ekranda tek sayfa
+  const sahne = document.getElementById('sahne');
+  const sigdir = () => {
+    const w = sahne.clientWidth - 32, h = sahne.clientHeight - 16, tek = w < 640;
+    const pw = Math.floor(Math.min(tek ? w : w / 2, h * 595 / 842));
+    kitap.style.width = (tek ? pw : pw * 2) + 'px';
+    kitap.style.height = Math.floor(pw * 842 / 595) + 'px';
+  };
+  sigdir();
+  const pf = new St.PageFlip(kitap, {
+    width: 595, height: 842, size: 'stretch',
+    minWidth: 280, maxWidth: 1000, minHeight: 396, maxHeight: 1414,
+    showCover: true, maxShadowOpacity: .45, mobileScrollSupport: false
+  });
+  pf.loadFromHTML(document.querySelectorAll('.page'));
+  const say = document.getElementById('say');
+  const yaz = () => say.textContent = `${pf.getCurrentPageIndex() + 1} / ${N}`;
+  pf.on('flip', yaz);
+  document.getElementById('geri').onclick = () => pf.flipPrev();
+  document.getElementById('ileri').onclick = () => pf.flipNext();
+  addEventListener('keydown', e => { if (e.key === 'ArrowRight') pf.flipNext(); if (e.key === 'ArrowLeft') pf.flipPrev(); });
+  addEventListener('resize', () => { sigdir(); pf.update(); });
+</script>
+</body>
+</html>
