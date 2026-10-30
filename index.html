@@ -38,7 +38,7 @@
 <body>
 <header>
   <h1>Fatih Gençlik Vakfı Bülteni <span>· 2026 Özel Sayısı</span></h1>
-  <nav aria-label="Sürüm"><a id="klasik" href="?surum=klasik">Klasik</a><a id="modern" href="?surum=modern">Modern</a></nav>
+  <nav aria-label="Sürüm"><a id="klasik" href="?surum=klasik">Klasik</a><a id="tezhip" href="?surum=tezhip">Tezhip</a></nav>
   <a id="pdf" download>PDF indir</a>
 </header>
 <div id="sahne"><div id="kitap"></div></div>
@@ -50,9 +50,9 @@
 <script src="vendor/page-flip.browser.js"></script>
 <script>
   const N = 28, kitap = document.getElementById('kitap'), V = 11;
-  // aynı adreste iki sürüm: ?surum=klasik|modern, &s= açılacak sayfa
-  const ara = new URLSearchParams(location.search), SURUM = ara.get('surum') === 'modern' ? 'modern' : 'klasik';
-  const KOK = SURUM === 'modern' ? 'modern/' : '', BAS = Math.min(N - 1, Math.max(0, parseInt(ara.get('s')) || 0));
+  // aynı adreste iki sürüm: ?surum=klasik|tezhip (eski bağlantılar için modern da geçerli), &s= açılacak sayfa
+  const ara = new URLSearchParams(location.search), SURUM = ['tezhip', 'modern'].includes(ara.get('surum')) ? 'tezhip' : 'klasik';
+  const KOK = SURUM === 'tezhip' ? 'modern/' : '', BAS = Math.min(N - 1, Math.max(0, parseInt(ara.get('s')) || 0));
   document.getElementById(SURUM).setAttribute('aria-current', 'page');
   document.getElementById('pdf').href = `${KOK}bulten.pdf?v=${V}`;
   document.getElementById('pdf').setAttribute('download', `FGV-Bulteni-2026-${SURUM}.pdf`);
@@ -102,7 +102,7 @@
     const tek = !cift || i === 0 || i === N - 1;
     say.textContent = tek ? `${i + 1} / ${N}` : `${i % 2 ? i + 1 : i}–${i % 2 ? i + 2 : i + 1} / ${N}`;
     const pw = Math.min(kitap.offsetWidth / 2, kitap.offsetHeight * 595 / 842);
-    for (const s of ['klasik', 'modern']) document.getElementById(s).href = `?surum=${s}&s=${i}`;
+    for (const s of ['klasik', 'tezhip']) document.getElementById(s).href = `?surum=${s}&s=${i}`;
     kitap.style.transform = !cift ? '' : i === 0 ? `translateX(${-pw / 2}px)` : i === N - 1 ? `translateX(${pw / 2}px)` : '';
   };
   // kayma yalnızca sayfa çevirirken yumuşak olsun; açılışta ve boyut değişiminde anında otursun
