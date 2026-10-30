@@ -10,6 +10,8 @@
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
   body{background:radial-gradient(ellipse at 50% 30%,#3c6662 0%,var(--koyu) 70%);color:#fff;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;display:flex;flex-direction:column;overflow:hidden}
+  /* kitabın görünmez kutusu sahneden taşabilir: düğmeler her zaman onun üstünde kalsın */
+  header,footer{position:relative;z-index:10}
   header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;gap:12px}
   header h1{font-size:15px;font-weight:600;letter-spacing:.04em}
   header h1 span{color:var(--altin);font-weight:400}
