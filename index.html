@@ -30,7 +30,7 @@
 <body>
 <header>
   <h1>Fatih Gençlik Vakfı Bülteni <span>· 2026 Özel Sayısı</span></h1>
-  <a href="bulten.pdf?v=7" download>PDF indir</a>
+  <a href="bulten.pdf?v=8" download>PDF indir</a>
 </header>
 <div id="sahne"><div id="kitap"></div></div>
 <footer>
@@ -45,7 +45,7 @@
     const d = document.createElement('div');
     d.className = 'page';
     if (i === 1 || i === N) d.dataset.density = 'hard';
-    d.innerHTML = `<img src="sayfalar/s-${String(i).padStart(2, '0')}.jpg?v=7" alt="Sayfa ${i}" loading="${i < 5 ? 'eager' : 'lazy'}">`;
+    d.innerHTML = `<img src="sayfalar/s-${String(i).padStart(2, '0')}.jpg?v=8" alt="Sayfa ${i}" loading="${i < 5 ? 'eager' : 'lazy'}">`;
     kitap.appendChild(d);
   }
   // kitabı sahneye sığdır: geniş ekranda çift sayfa, dar ekranda tek sayfa
