@@ -30,7 +30,7 @@
 <body>
 <header>
   <h1>Fatih Gençlik Vakfı Bülteni <span>· 2025 Özel Sayısı</span></h1>
-  <a href="bulten.pdf?v=4" download>PDF indir</a>
+  <a href="bulten.pdf?v=5" download>PDF indir</a>
 </header>
 <div id="sahne"><div id="kitap"></div></div>
 <footer>
@@ -45,7 +45,7 @@
     const d = document.createElement('div');
     d.className = 'page';
     if (i === 1 || i === N) d.dataset.density = 'hard';
-    d.innerHTML = `<img src="sayfalar/s-${String(i).padStart(2, '0')}.jpg?v=4" alt="Sayfa ${i}" loading="${i < 5 ? 'eager' : 'lazy'}">`;
+    d.innerHTML = `<img src="sayfalar/s-${String(i).padStart(2, '0')}.jpg?v=5" alt="Sayfa ${i}" loading="${i < 5 ? 'eager' : 'lazy'}">`;
     kitap.appendChild(d);
   }
   // kitabı sahneye sığdır: geniş ekranda çift sayfa, dar ekranda tek sayfa
@@ -61,7 +61,7 @@
   const pf = new St.PageFlip(kitap, {
     width: 595, height: 842, size: 'stretch',
     minWidth: 280, maxWidth: 1000, minHeight: 396, maxHeight: 1414,
-    showCover: true, maxShadowOpacity: .45, mobileScrollSupport: false
+    showCover: true, showPageCorners: false, maxShadowOpacity: .45, mobileScrollSupport: false
   });
   pf.loadFromHTML(document.querySelectorAll('.page'));
   const say = document.getElementById('say');
