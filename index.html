@@ -15,9 +15,12 @@
   header h1 span{color:var(--altin);font-weight:400}
   header a{color:var(--altin);font-size:13px;text-decoration:none;border:1px solid rgba(201,168,101,.5);padding:6px 12px;border-radius:999px;white-space:nowrap}
   #sahne{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;padding:8px 16px}
-  #kitap{margin:auto;transition:transform .45s ease}
+  #kitap{margin:auto}
   .page{background:#fff}
   .page img{width:100%;height:100%;display:block;object-fit:cover}
+  .stf__item.--left:not(.--hard)::after,.stf__item.--right:not(.--hard)::after{content:"";position:absolute;top:0;bottom:0;width:7%;pointer-events:none}
+  .stf__item.--left:not(.--hard)::after{right:0;background:linear-gradient(to left,rgba(0,0,0,.14),transparent)}
+  .stf__item.--right:not(.--hard)::after{left:0;background:linear-gradient(to right,rgba(0,0,0,.14),transparent)}
   footer{display:flex;align-items:center;justify-content:center;gap:14px;padding:10px 16px 14px}
   footer button{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.25);width:44px;height:44px;border-radius:50%;font-size:20px;cursor:pointer}
   footer button:hover{background:rgba(255,255,255,.2)}
@@ -27,7 +30,7 @@
 <body>
 <header>
   <h1>Fatih Gençlik Vakfı Bülteni <span>· 2025 Özel Sayısı</span></h1>
-  <a href="bulten.pdf?v=3" download>PDF indir</a>
+  <a href="bulten.pdf?v=4" download>PDF indir</a>
 </header>
 <div id="sahne"><div id="kitap"></div></div>
 <footer>
@@ -42,18 +45,19 @@
     const d = document.createElement('div');
     d.className = 'page';
     if (i === 1 || i === N) d.dataset.density = 'hard';
-    d.innerHTML = `<img src="sayfalar/s-${String(i).padStart(2, '0')}.jpg?v=3" alt="Sayfa ${i}" loading="${i < 5 ? 'eager' : 'lazy'}">`;
+    d.innerHTML = `<img src="sayfalar/s-${String(i).padStart(2, '0')}.jpg?v=4" alt="Sayfa ${i}" loading="${i < 5 ? 'eager' : 'lazy'}">`;
     kitap.appendChild(d);
   }
   // kitabı sahneye sığdır: geniş ekranda çift sayfa, dar ekranda tek sayfa
   const sahne = document.getElementById('sahne');
-  const sigdir = () => {
+  const sigdir = ilk => {
     const w = sahne.clientWidth - 32, h = sahne.clientHeight - 16, tek = w < 640;
     const pw = Math.floor(Math.min(tek ? w : w / 2, h * 595 / 842));
-    kitap.style.width = (tek ? pw : pw * 2) + 'px';
+    // genişliği ilk açılıştan sonra kütüphane yönetir; yalnızca yükseklik güncellenir
+    if (ilk) kitap.style.width = (tek ? pw : pw * 2) + 'px';
     kitap.style.height = Math.floor(pw * 842 / 595) + 'px';
   };
-  sigdir();
+  sigdir(true);
   const pf = new St.PageFlip(kitap, {
     width: 595, height: 842, size: 'stretch',
     minWidth: 280, maxWidth: 1000, minHeight: 396, maxHeight: 1414,
@@ -66,17 +70,23 @@
     const i = pf.getCurrentPageIndex(), cift = pf.getOrientation() === 'landscape';
     const tek = !cift || i === 0 || i === N - 1;
     say.textContent = tek ? `${i + 1} / ${N}` : `${i % 2 ? i + 1 : i}–${i % 2 ? i + 2 : i + 1} / ${N}`;
-    kitap.style.transform = !cift ? '' : i === 0 ? 'translateX(-25%)' : i === N - 1 ? 'translateX(25%)' : '';
+    const pw = Math.min(kitap.offsetWidth / 2, kitap.offsetHeight * 595 / 842);
+    kitap.style.transform = !cift ? '' : i === 0 ? `translateX(${-pw / 2}px)` : i === N - 1 ? `translateX(${pw / 2}px)` : '';
   };
-  pf.on('flip', yaz);
+  // kayma yalnızca sayfa çevirirken yumuşak olsun; açılışta ve boyut değişiminde anında otursun
+  pf.on('flip', () => { kitap.style.transition = 'transform .45s ease'; yaz(); });
+  kitap.addEventListener('transitionend', e => { if (e.target === kitap) kitap.style.transition = ''; });
   pf.on('changeOrientation', yaz);
+  pf.on('init', yaz);
   yaz();
+  new ResizeObserver(yaz).observe(kitap);
+  addEventListener('load', yaz);
   // sayfa çevirirken boş görünmesin: ilk açılıştan sonra hepsini yükle
   addEventListener('load', () => document.querySelectorAll('.page img').forEach(i => { i.loading = 'eager'; }));
   document.getElementById('geri').onclick = () => pf.flipPrev();
   document.getElementById('ileri').onclick = () => pf.flipNext();
   addEventListener('keydown', e => { if (e.key === 'ArrowRight') pf.flipNext(); if (e.key === 'ArrowLeft') pf.flipPrev(); });
-  addEventListener('resize', () => { sigdir(); pf.update(); });
+  addEventListener('resize', () => { sigdir(); pf.update(); yaz(); });
 </script>
 </body>
 </html>
