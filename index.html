@@ -14,6 +14,10 @@
   header h1{font-size:15px;font-weight:600;letter-spacing:.04em}
   header h1 span{color:var(--altin);font-weight:400}
   header a{color:var(--altin);font-size:13px;text-decoration:none;border:1px solid rgba(201,168,101,.5);padding:6px 12px;border-radius:999px;white-space:nowrap}
+  nav{display:flex;gap:4px;padding:3px;border:1px solid rgba(201,168,101,.5);border-radius:999px}
+  nav a{border:0;padding:6px 16px;color:#e8efe9;font-weight:600}
+  nav a[aria-current]{background:var(--altin);color:#1d3532}
+  @media(max-width:640px){header{flex-wrap:wrap;justify-content:center;gap:8px}header h1{width:100%;text-align:center}}
   #sahne{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;padding:8px 16px}
   #kitap{margin:auto}
   .page{background:#fff}
@@ -30,7 +34,8 @@
 <body>
 <header>
   <h1>Fatih Gençlik Vakfı Bülteni <span>· 2026 Özel Sayısı</span></h1>
-  <a href="bulten.pdf?v=8" download>PDF indir</a>
+  <nav aria-label="Sürüm"><a id="klasik" href="?surum=klasik">Klasik</a><a id="modern" href="?surum=modern">Modern</a></nav>
+  <a id="pdf" download>PDF indir</a>
 </header>
 <div id="sahne"><div id="kitap"></div></div>
 <footer>
@@ -40,12 +45,18 @@
 </footer>
 <script src="vendor/page-flip.browser.js"></script>
 <script>
-  const N = 28, kitap = document.getElementById('kitap');
+  const N = 28, kitap = document.getElementById('kitap'), V = 9;
+  // aynı adreste iki sürüm: ?surum=klasik|modern, &s= açılacak sayfa
+  const ara = new URLSearchParams(location.search), SURUM = ara.get('surum') === 'modern' ? 'modern' : 'klasik';
+  const KOK = SURUM === 'modern' ? 'modern/' : '', BAS = Math.min(N - 1, Math.max(0, parseInt(ara.get('s')) || 0));
+  document.getElementById(SURUM).setAttribute('aria-current', 'page');
+  document.getElementById('pdf').href = `${KOK}bulten.pdf?v=${V}`;
+  document.getElementById('pdf').setAttribute('download', `FGV-Bulteni-2026-${SURUM}.pdf`);
   for (let i = 1; i <= N; i++) {
     const d = document.createElement('div');
     d.className = 'page';
     if (i === 1 || i === N) d.dataset.density = 'hard';
-    d.innerHTML = `<img src="sayfalar/s-${String(i).padStart(2, '0')}.jpg?v=8" alt="Sayfa ${i}" loading="${i < 5 ? 'eager' : 'lazy'}">`;
+    d.innerHTML = `<img src="${KOK}sayfalar/s-${String(i).padStart(2, '0')}.jpg?v=${V}" alt="Sayfa ${i}" loading="${Math.abs(i - BAS) < 5 ? 'eager' : 'lazy'}">`;
     kitap.appendChild(d);
   }
   // kitabı sahneye sığdır: geniş ekranda çift sayfa, dar ekranda tek sayfa
@@ -61,7 +72,7 @@
   const pf = new St.PageFlip(kitap, {
     width: 595, height: 842, size: 'stretch',
     minWidth: 280, maxWidth: 1000, minHeight: 396, maxHeight: 1414,
-    showCover: true, showPageCorners: false, maxShadowOpacity: .45, mobileScrollSupport: false
+    startPage: BAS, showCover: true, showPageCorners: false, maxShadowOpacity: .45, mobileScrollSupport: false
   });
   pf.loadFromHTML(document.querySelectorAll('.page'));
   const say = document.getElementById('say');
@@ -71,6 +82,7 @@
     const tek = !cift || i === 0 || i === N - 1;
     say.textContent = tek ? `${i + 1} / ${N}` : `${i % 2 ? i + 1 : i}–${i % 2 ? i + 2 : i + 1} / ${N}`;
     const pw = Math.min(kitap.offsetWidth / 2, kitap.offsetHeight * 595 / 842);
+    for (const s of ['klasik', 'modern']) document.getElementById(s).href = `?surum=${s}&s=${i}`;
     kitap.style.transform = !cift ? '' : i === 0 ? `translateX(${-pw / 2}px)` : i === N - 1 ? `translateX(${pw / 2}px)` : '';
   };
   // kayma yalnızca sayfa çevirirken yumuşak olsun; açılışta ve boyut değişiminde anında otursun
