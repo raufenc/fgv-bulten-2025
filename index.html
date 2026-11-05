@@ -51,7 +51,7 @@
 </footer>
 <script src="vendor/page-flip.browser.js"></script>
 <script>
-  const kitap = document.getElementById('kitap'), V = 13;
+  const kitap = document.getElementById('kitap'), V = 14;
   // aynı adreste iki sürüm: ?surum=klasik|tezhip (eski bağlantılar için modern da geçerli), &s= açılacak sayfa
   const ara = new URLSearchParams(location.search), SURUM = ['tezhip', 'modern'].includes(ara.get('surum')) ? 'tezhip' : 'klasik';
   const N = SURUM === 'tezhip' ? 36 : 28; // Tezhip 5 Kas ilaveleriyle 36 sayfa
